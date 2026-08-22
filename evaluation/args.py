@@ -145,7 +145,8 @@ def parse_arguments():
     parser.add_argument("--pointnet_variation", type=int, default=0)
     parser.add_argument("--pointnet_numpoints", type=int, default=256)
     parser.add_argument(
-        "--pointnet_path", type=str,default="E:\\Github storage\\CMMLocPP\\checkpoints\\pointnet_acc0.86_lr1_p256.pth"
+        # "--pointnet_path", type=str,default="E:\\Github storage\\CMMLocPP\\checkpoints\\pointnet_acc0.86_lr1_p256.pth"
+        "--pointnet_path", type=str, default="/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/checkpoints/pointnet_acc0.86_lr1_p256.pth"
     )
     parser.add_argument("--pointnet_freeze", action="store_true")
     parser.add_argument("--pointnet_features", type=int, default=2)
