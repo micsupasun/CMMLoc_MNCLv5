@@ -8,9 +8,9 @@
 #SBATCH --mem=400G
 #SBATCH --time=15-0:00:00
 ### #SBATCH --time=2:00:00
-#SBATCH --job-name=CMMLoc_MNCLv4
-#SBATCH --output=/share/nas/cs-nas/zh932237/CMMLoc_MNCLv4/logs/%x-%j.out
-#SBATCH --error=/share/nas/cs-nas/zh932237/CMMLoc_MNCLv4/logs/%x-%j.err
+#SBATCH --job-name=CMMLoc_MNCLv5
+#SBATCH --output=/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/logs/%x-%j.out
+#SBATCH --error=/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/logs/%x-%j.err
 
 # ---- Force ALL caches to node-local (avoid /home and /share/nas quotas) ----
 CACHE_BASE=/share/nas/cs-nas/zh932237/hf_cache
@@ -37,11 +37,11 @@ echo "XDG_CACHE_HOME=$XDG_CACHE_HOME"
 
 set -euo pipefail
 
-cd /share/nas/cs-nas/zh932237/CMMLoc_MNCLv4
+cd /share/nas/cs-nas/zh932237/CMMLoc_MNCLv5
 mkdir -p logs
 
 # Activate your env (optional for hostname, but fine to keep)
-source  /share/nas/cs-nas/zh932237/env_cmmloc_mnclv4/bin/activate
+source  /share/nas/cs-nas/zh932237/env_cmmloc_mnclv5/bin/activate
 
 # Optional: show GPUs allocated
 echo "Host: $(hostname)"
