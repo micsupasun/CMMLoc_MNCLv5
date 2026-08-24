@@ -11,9 +11,9 @@ param(
 
     [int[]]$Threshs = @(5, 10, 15),
 
-    [string]$RepoRoot = "I:\Github storage\CMMLocPP - Copy",
+    [string]$RepoRoot = "/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5",
 
-    [string]$PythonExe = "C:\Users\Turza\anaconda3\envs\cmmloc_new\python.exe"
+    [string]$PythonExe = "/share/nas/cs-nas/zh932237/env_cmmloc_mnclv5/bin/python.exe"
 )
 
 $ErrorActionPreference = "Stop"
