@@ -1,0 +1,74 @@
+#!/bin/bash
+#SBATCH -p csgpus
+###SBATCH --gres=gpu:H100:2
+#SBATCH --gres=gpu:1
+#SBATCH --nodelist=racc2-gpu-2
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=64
+#SBATCH --mem=400G
+#SBATCH --time=15-0:00:00
+### #SBATCH --time=2:00:00
+#SBATCH --job-name=CMMLoc_MNCLv5
+#SBATCH --output=/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/logs/%x-%j.out
+#SBATCH --error=/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/logs/%x-%j.err
+
+# ---- Force ALL caches to node-local (avoid /home and /share/nas quotas) ----
+CACHE_BASE=/share/nas/cs-nas/zh932237/hf_cache
+mkdir -p "$CACHE_BASE"/{hf,hub,transformers,torch,xdg,tmp,pip}
+
+export HF_HOME="$CACHE_BASE/hf"
+export HF_HUB_CACHE="$CACHE_BASE/hub"
+export TRANSFORMERS_CACHE="$CACHE_BASE/transformers"
+export TORCH_HOME="$CACHE_BASE/torch"
+export XDG_CACHE_HOME="$CACHE_BASE/xdg"
+export TMPDIR="$CACHE_BASE/tmp"
+export PIP_CACHE_DIR="$CACHE_BASE/pip"
+
+# Show what will be used (very important for debugging)
+echo "HF_HOME=$HF_HOME"
+echo "HF_HUB_CACHE=$HF_HUB_CACHE"
+echo "TRANSFORMERS_CACHE=$TRANSFORMERS_CACHE"
+echo "XDG_CACHE_HOME=$XDG_CACHE_HOME"
+# -------------------------------------------------------------------------
+
+
+
+
+
+set -euo pipefail
+
+cd /share/nas/cs-nas/zh932237/CMMLoc_MNCLv5
+mkdir -p logs
+
+# Activate your env (optional for hostname, but fine to keep)
+source  /share/nas/cs-nas/zh932237/env_cmmloc_mnclv5/bin/activate
+
+# Optional: show GPUs allocated
+echo "Host: $(hostname)"
+nvidia-smi -L
+
+# Your requested command:
+hostname
+
+python -m evaluation.pipeline \
+  --batch_size 8 \
+  --base_path "/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/cityloc_dataset/k360_50-10_gridCells_pd10_pc2_shiftPoses_all_nm-6_v5" \
+  --eval_split cityloc_k_test \
+  --target_cell_attr eval_cell_id \
+  --use_features class color position num \
+  --no_pc_augment \
+  --no_pc_augment_fine \
+  --hungging_model t5-large \
+  --fixed_embedding \
+  --text_max_length 128 \
+  --pointnet_path "/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/checkpoints/k360_30-10_scG_pd10_pc4_spY_all/best_pointnet.pth" \
+  --prealign_pointnet_path "/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/checkpoints/k360_30-10_scG_pd10_pc4_spY_all/best_pointnet.pth" \
+  --prealign_color_path "/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/checkpoints/k360_30-10_scG_pd10_pc4_spY_all/best_color_encoder.pth" \
+  --prealign_mlp_path "/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/checkpoints/k360_30-10_scG_pd10_pc4_spY_all/best_mlp.pth" \
+  --path_coarse "/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/checkpoints/k360_30-10_scG_pd10_pc4_spY_all/coarse_contN_epoch6_acc0.788_ecl0_eco0_p256_npa1_loss-contrastive_f-class-color-position-num.pth" \
+  --path_fine "/share/nas/cs-nas/zh932237/CMMLoc_MNCLv5/checkpoints/k360_30-10_scG_pd10_pc4_spY_all/fine_contN_epoch15_offset0.100_lr0.0003_obj-6-16_ecl0_eco0_p256_npa1_f-class-color-position-num.pth" \
+  --rerank_topn 50 \
+  --rerank_base_weight 1.0 \
+  --rerank_label_weight 0.6 \
+  --rerank_color_weight 1.0 \
+  --threshs 5 10 15
