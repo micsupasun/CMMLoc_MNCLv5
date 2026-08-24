@@ -1,3 +1,4 @@
 data/
 checkpoints/k360_30-10_scG_pd10_pc4_spY_all
 logs/
+cityloc_dataset/
